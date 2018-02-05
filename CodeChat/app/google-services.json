@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "632224173770",
+    "firebase_url": "https://codechat-group-f.firebaseio.com",
+    "project_id": "codechat-group-f",
+    "storage_bucket": "codechat-group-f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632224173770:android:8579ae50dd36fdf3",
+        "android_client_info": {
+          "package_name": "uu.pss_group.f.codechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "632224173770-gf15u55tjpil7aa4ptoo65c7u60ggv2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU8bDDEJwi9RUu3NWIYhEPyGAQ11r-ti8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
