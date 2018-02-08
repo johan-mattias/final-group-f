@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
-    //Attributes
+
     private Button signupButton;
     private EditText mailField, passwordField, passwordConfField;
     private ProgressDialog loadingD;
@@ -31,11 +31,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        signupButton = findViewById(R.id.signup_signupButton);
-        mailField = findViewById(R.id.signup_emailField);
-        passwordField = findViewById(R.id.signup_passwordField);
-        passwordConfField = findViewById(R.id.signup_passwordConfField);
-        loadingD = new ProgressDialog(this);
+        loadComponentsFromView();
+
         signupButton.setOnClickListener(this);
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -59,51 +56,76 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+    private void loadComponentsFromView() {
+        signupButton = findViewById(R.id.signup_signupButton);
+        mailField = findViewById(R.id.signup_emailField);
+        passwordField = findViewById(R.id.signup_passwordField);
+        passwordConfField = findViewById(R.id.signup_passwordConfField);
+
+        loadingD = new ProgressDialog(this);
+    }
+
     @Override
     public void onClick(View view) {
         if (view == signupButton) {
-            SignUpUser();
+            signUpUser();
         }
     }
 
-    private String passwordCheck(String psw){
-        if(     !psw.matches(".*[A-Z].*") ||
-                !psw.matches(".*[a-z].*") ||
-                !psw.matches(".*\\d.*")   ||
-                psw.length() < 10) return null;
-        return psw;
-    }
 
-    private void SignUpUser() {
+    private void signUpUser() {
         String email = mailField.getText().toString().trim();
-        String password = passwordCheck(passwordField.getText().toString().trim());
+        String password = passwordField.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getApplicationContext(), "Please fill in the Email field", Toast.LENGTH_LONG).show();
+            displayToast("Please fill in the Email field");
             return;
         }
-        if (TextUtils.isEmpty(password) || password == null) {
-            Toast.makeText(getApplicationContext(), "Password should contain at least one uppercase"+
-                    "character, a lowercase character, a digit and should be 10 characters long!", Toast.LENGTH_LONG).show();
+
+        if (isNotAValidPassword(password)) {
+            displayToast("Password should contain at least one uppercase"+
+                    "character, a lowercase character, a digit and should be 10 characters long!");
             return;
         }
+
         loadingD.setMessage("Registering User...");
         loadingD.show();
+
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "User successfully signed up", Toast.LENGTH_LONG).show();
+                            displayToast("User successfully signed up");
                         } else {
+
                             if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                Toast.makeText(getApplicationContext(), "This user is already registered", Toast.LENGTH_LONG).show();
+                                displayToast("This user is already registered");
                             } else {
-                                Toast.makeText(getApplicationContext(), "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
+                                displayToast("Something went wrong... Please try again");
                             }
+                            
                         }
                     }
         });
+
         loadingD.cancel();
     }
+
+    protected boolean isValidate(String psw){
+        if(     !psw.matches(".*[A-Z].*") ||
+                !psw.matches(".*[a-z].*") ||
+                !psw.matches(".*\\d.*")   ||
+                psw.length() < 10) return false;
+        return true;
+    }
+
+    private boolean isNotAValidPassword(String password) {
+        return TextUtils.isEmpty(password) || isValidate(password);
+    }
+
+    private void displayToast(String msg){
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+    }
+
 }
