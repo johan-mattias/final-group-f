@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
     //Attributes
@@ -45,6 +46,15 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         } else if (view == signupButton) {
             Intent myIntent = new Intent(this, SignUpActivity.class);
             startActivity(myIntent);
+        }
+    }
+
+    public void onStart() {
+        super.onStart();
+        //Check if user is already logged in and skip this step if so
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+            startMainMenu();
         }
     }
 

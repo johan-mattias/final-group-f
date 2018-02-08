@@ -1,10 +1,13 @@
 package uu.pss_group.f.codechat;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
     //Attributes
@@ -27,13 +31,32 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        signupButton = (Button) findViewById(R.id.signup_signupButton);
-        mailField = (EditText) findViewById(R.id.signup_emailField);
-        passwordField = (EditText) findViewById(R.id.signup_passwordField);
-        passwordConfField = (EditText) findViewById(R.id.signup_passwordConfField);
+        signupButton = findViewById(R.id.signup_signupButton);
+        mailField = findViewById(R.id.signup_emailField);
+        passwordField = findViewById(R.id.signup_passwordField);
+        passwordConfField = findViewById(R.id.signup_passwordConfField);
         loadingD = new ProgressDialog(this);
         signupButton.setOnClickListener(this);
         firebaseAuth = FirebaseAuth.getInstance();
+
+        passwordConfField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String pass = passwordField.getText().toString();
+                String passConf = passwordConfField.getText().toString();
+                if (!pass.equals(passConf)) {
+                    passwordConfField.setTextColor(Color.rgb(201,0,0));
+                } else {
+                    passwordConfField.setTextColor(Color.rgb(0,120,0));
+                }
+            }
+        });
     }
 
     @Override
@@ -73,7 +96,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "User successfully signed up", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getApplicationContext(), "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                Toast.makeText(getApplicationContext(), "This user is already registered", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
         });
