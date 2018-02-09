@@ -1,6 +1,7 @@
 package uu.pss_group.f.codechat.view;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -72,12 +73,18 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             String passwordConf = passwordConfField.getText().toString().trim();
             loadingD.setMessage("Registering User...");
             loadingD.show();
-            ViewController cont = new ViewController(getApplicationContext());
+            final ViewController cont = new ViewController(getApplicationContext());
             cont.signUpUser(username, email, password, passwordConf);
             loadingD.cancel();
+            FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    if (cont.checkIfLoggedInUser()) {
+                        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(myIntent);
+                    }
+                }
+            });
         }
     }
-
-
-
 }

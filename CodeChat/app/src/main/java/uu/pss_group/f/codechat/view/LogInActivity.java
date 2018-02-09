@@ -54,9 +54,10 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     public void onStart() {
         super.onStart();
         //Check if user is already logged in and skip this step if so
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser != null) {
-            startMainMenu();
+        ViewController cont = new ViewController(getApplicationContext());
+        if (cont.checkIfLoggedInUser()) {
+            Intent myIntent = new Intent(this, MainActivity.class);
+            startActivity(myIntent);
         }
     }
 
@@ -79,17 +80,13 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            startMainMenu();
+                            Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(myIntent);
                         } else {
                             Toast.makeText(getApplicationContext(), "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
         loadingD.cancel();
-    }
-
-    private void startMainMenu() {
-        Intent myIntent = new Intent(this, MainActivity.class);
-        startActivity(myIntent);
     }
 }

@@ -20,6 +20,5 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         Toast.makeText(getApplicationContext(), "Logged in as:  " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), firebaseAuth.getCurrentUser().getUid(), Toast.LENGTH_LONG).show();
     }
 }

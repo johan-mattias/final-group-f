@@ -3,6 +3,7 @@ package uu.pss_group.f.codechat.view;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -11,6 +12,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
+import uu.pss_group.f.codechat.data.DataController;
 import uu.pss_group.f.codechat.domain.UserController;
 
 public class ViewController {
@@ -31,7 +33,7 @@ public class ViewController {
             displayToast(caller, "Please fill in the Email field");
             return;
         } else if (isNotAValidPassword(password)) {
-            displayToast(caller, "Password should contain at least one uppercase"+
+            displayToast(caller, "Password should contain at least one uppercase "+
                     "character, a lowercase character, a digit and should be 10 characters long!");
             return;
         } else if (!password.equals(passwordConf)) {
@@ -39,12 +41,22 @@ public class ViewController {
             return;
         }
         UserController cont = new UserController(caller);
-        cont.signUpUser(username, email, password, passwordConf);
+        cont.signUpUser(username, email, password);
+    }
+
+    //Authentication
+    public void logInUser(String email, String password) {
+        UserController cont = new UserController(caller);
+        cont.logInUser(email, password);
+    }
+
+    public boolean checkIfLoggedInUser() {
+        UserController cont = new UserController(caller);
+        return cont.checkIfLoggedInUser();
     }
 
     //Password security Checking
     private boolean isValidated(String psw){
-        displayToast(caller, psw);
         if(     !psw.matches(".*[A-Z].*") ||
                 !psw.matches(".*[a-z].*") ||
                 !psw.matches(".*\\d.*")   ||
@@ -53,7 +65,7 @@ public class ViewController {
     }
 
     private boolean isNotAValidPassword(String password) {
-        return TextUtils.isEmpty(password) || isValidated(password);
+        return TextUtils.isEmpty(password) || !(isValidated(password));
     }
 
     //Print messages

@@ -3,6 +3,7 @@ package uu.pss_group.f.codechat.data;
 
 import android.content.Context;
 import uu.pss_group.f.codechat.domain.Profile;
+import uu.pss_group.f.codechat.domain.UserController;
 
 public class DataController {
     //Attributes
@@ -12,15 +13,25 @@ public class DataController {
     public DataController(Context caller) {this.caller = caller;}
 
     //User creation
-    public String createNewUser(String email, String password) {
-        MyAuth auth = new MyAuth();
-        auth.createNewUser(caller, email, password);
+    public void createNewUser(String username, String email, String password) {
+        UserManagement auth = new UserManagement();
+        auth.createNewUser(caller, username, email, password);
         auth.loginUser(caller, email, password);
-        return auth.getCurrentUserId();
     }
 
-    public void createNewProfile(Profile profile) {
-        MyDatabase database = new MyDatabase();
-        database.storeProfile(caller, profile, profile.getUserId());
+    public Profile createNewProfile(String userId, String username, String email) {
+        UserController cont = new UserController(caller);
+        return cont.createProfile(userId, username, email);
+    }
+
+    //Authentication
+    public void logInUser(String email, String password) {
+        UserManagement auth = new UserManagement();
+        auth.loginUser(caller, email, password);
+    }
+
+    public boolean checkIfLoggedInUser() {
+        UserManagement auth = new UserManagement();
+        return auth.checkIfLoggedInUser();
     }
 }
