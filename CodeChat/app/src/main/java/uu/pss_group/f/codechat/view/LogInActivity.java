@@ -1,4 +1,4 @@
-package uu.pss_group.f.codechat;
+package uu.pss_group.f.codechat.view;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import uu.pss_group.f.codechat.R;
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
     //Attributes

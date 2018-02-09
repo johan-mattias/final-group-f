@@ -1,11 +1,12 @@
-package uu.pss_group.f.codechat;
+package uu.pss_group.f.codechat.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import uu.pss_group.f.codechat.R;
 
 public class MainActivity extends AppCompatActivity {
     //Attributes
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        Toast.makeText(getApplicationContext(), "Logged In as:" + currentUser.getEmail(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Logged in as:  " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), firebaseAuth.getCurrentUser().getUid(), Toast.LENGTH_LONG).show();
     }
 }
