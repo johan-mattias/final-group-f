@@ -3,7 +3,8 @@ package uu.pss_group.f.codechat.domain;
 
 import android.content.Context;
 import uu.pss_group.f.codechat.data.DataController;
-import uu.pss_group.f.codechat.data.UserManagement;
+import uu.pss_group.f.codechat.data.MyAuthenticator;
+import uu.pss_group.f.codechat.data.MyDatabase;
 
 public class UserController {
     //Attributes
@@ -12,26 +13,33 @@ public class UserController {
     //Constructor
     public UserController(Context caller) {this.caller = caller;}
 
-    //Register a new user
-    public void signUpUser(String username, String email, String password) {
-        DataController cont = new DataController(caller);
-        cont.createNewUser(username, email, password);
+    //Server Controllers
+    public MyDatabase getDatabaseReference() {
+        DataController cont = new DataController();
+        return cont.getDatabaseReference();
     }
 
-    public Profile createProfile(String userId, String username, String email) {
-        Profile profile = new Profile(userId, username, email);
-        return profile;
+    public MyAuthenticator getAuthReference() {
+        DataController cont = new DataController();
+        return cont.getAuthReference();
+    }
+
+    //Register a new user
+    public void signUpUser(String username, String email, String password) {
+        UserManagement userManager = new UserManagement(getAuthReference(), getDatabaseReference());
+        userManager.createNewUser(caller, username, email, password);
+        userManager.logInUser(caller, email, password);
     }
 
     //Authentication
     public void logInUser(String email, String password) {
-        DataController cont = new DataController(caller);
-        cont.logInUser(email, password);
+        UserManagement userManager = new UserManagement(getAuthReference(), getDatabaseReference());
+        userManager.logInUser(caller, email, password);
     }
 
-    public boolean checkIfLoggedInUser() {
-        DataController cont = new DataController(caller);
-        return cont.checkIfLoggedInUser();
+    public void startActivityIfUserLoggedIn(Class activity) {
+        UserManagement userManager = new UserManagement(getAuthReference(), getDatabaseReference());
+        userManager.startActivityIfUserLoggedIn(caller, activity);
     }
 
 }

@@ -24,7 +24,7 @@ import uu.pss_group.f.codechat.R;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
     //Attributes
-    private Button signupButton;
+    private Button signUpButton;
     private EditText passwordField, passwordConfField, mailField, usernameField;
     private ProgressDialog loadingD;
 
@@ -34,13 +34,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_signup);
 
         //Initialize
-        signupButton = findViewById(R.id.signup_signupButton);
+        signUpButton = findViewById(R.id.signup_signupButton);
         mailField = findViewById(R.id.signup_emailField);
         passwordField = findViewById(R.id.signup_passwordField);
         passwordConfField = findViewById(R.id.signup_passwordConfField);
         usernameField = findViewById(R.id.signup_usernameField);
         loadingD = new ProgressDialog(this);
-        signupButton.setOnClickListener(this);
+        signUpButton.setOnClickListener(this);
 
         //Matching passwords in real time
         passwordConfField.addTextChangedListener(new TextWatcher() {
@@ -66,25 +66,17 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     //Sign up button clicked listener
     @Override
     public void onClick(View view) {
-        if (view == signupButton) {
+        if (view == signUpButton) {
             String username = usernameField.getText().toString().trim();
             String email = mailField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
             String passwordConf = passwordConfField.getText().toString().trim();
-            loadingD.setMessage("Registering User...");
+            loadingD.setMessage(getString(R.string.en_signing_in_msg));
             loadingD.show();
             final ViewController cont = new ViewController(getApplicationContext());
             cont.signUpUser(username, email, password, passwordConf);
             loadingD.cancel();
-            FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                    if (cont.checkIfLoggedInUser()) {
-                        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(myIntent);
-                    }
-                }
-            });
+            cont.startActivityIfUserLoggedIn(MainActivity.class);
         }
     }
 }

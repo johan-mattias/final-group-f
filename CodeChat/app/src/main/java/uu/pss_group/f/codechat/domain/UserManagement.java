@@ -1,7 +1,8 @@
-package uu.pss_group.f.codechat.data;
+package uu.pss_group.f.codechat.domain;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -10,26 +11,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import uu.pss_group.f.codechat.domain.Profile;
-import uu.pss_group.f.codechat.domain.UserController;
+import uu.pss_group.f.codechat.data.MyAuthenticator;
+import uu.pss_group.f.codechat.data.MyDatabase;
 
 public class UserManagement {
     //Attributes
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference myDatabase;
+    private MyAuthenticator auth;
+    private MyDatabase database;
 
-    //Constructor
-    public UserManagement() {
-        this.firebaseAuth = FirebaseAuth.getInstance();
-        this.myDatabase = FirebaseDatabase.getInstance().getReference();
+    //Constructors
+    protected UserManagement(MyAuthenticator auth, MyDatabase database) {
+        this.database = database;
+        this.auth = auth;
     }
 
+    //Register new users
     protected void createNewUser(final Context caller, final String username, final String email, String password) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        auth.getAuthController().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -38,9 +36,8 @@ public class UserManagement {
 
                         //Create the profile and store it in the database
                         String userId = task.getResult().getUser().getUid();
-                        DataController cont = new DataController(caller);
-                        Profile profile = cont.createNewProfile(userId, username, email);
-                        myDatabase.child("profiles").child(userId).setValue(profile).addOnFailureListener(new OnFailureListener() {
+                        Profile profile = new Profile(userId, username, email);
+                        database.getDatabaseController().child("profiles").child(userId).setValue(profile).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(caller, "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
@@ -57,8 +54,9 @@ public class UserManagement {
             });
     }
 
-    protected void loginUser(final Context caller, String email, String password) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
+    //Users log in
+    protected void logInUser(final Context caller, String email, String password) {
+        auth.getAuthController().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -69,16 +67,18 @@ public class UserManagement {
             });
     }
 
-    protected boolean checkIfLoggedInUser() {
-        return (firebaseAuth.getCurrentUser() != null);
-    }
+    protected void startActivityIfUserLoggedIn(final Context caller, final Class activity) {
+        auth.getAuthController().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (auth.getAuthController().getCurrentUser() != null) {
+                    Intent intent = new Intent(caller, activity);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    caller.startActivity(intent);
 
-    protected String getCurrentUserId() {
-        if (checkIfLoggedInUser()) {
-            return firebaseAuth.getCurrentUser().getUid();
-        } else {
-            return null;
-        }
+                }
+            }
+        });
     }
 
 }

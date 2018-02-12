@@ -1,18 +1,10 @@
 package uu.pss_group.f.codechat.view;
 
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.Toast;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-
-import uu.pss_group.f.codechat.data.DataController;
+import uu.pss_group.f.codechat.R;
 import uu.pss_group.f.codechat.domain.UserController;
 
 public class ViewController {
@@ -27,17 +19,16 @@ public class ViewController {
     //Register new user
     protected void signUpUser(String username, String email, String password, String passwordConf) {
         if (TextUtils.isEmpty(username)) {
-            displayToast(caller, "Please fill in the Username field");
+            Toast.makeText(caller, caller.getString(R.string.en_fill_username_msg), Toast.LENGTH_LONG).show();
             return;
         } else if (TextUtils.isEmpty(email)) {
-            displayToast(caller, "Please fill in the Email field");
+            Toast.makeText(caller, caller.getString(R.string.en_fill_email_msg), Toast.LENGTH_LONG).show();
             return;
         } else if (isNotAValidPassword(password)) {
-            displayToast(caller, "Password should contain at least one uppercase "+
-                    "character, a lowercase character, a digit and should be 10 characters long!");
+            Toast.makeText(caller, caller.getString(R.string.en_wrong_pass_msg), Toast.LENGTH_LONG).show();
             return;
         } else if (!password.equals(passwordConf)) {
-            displayToast(caller, "The passwords don't match");
+            Toast.makeText(caller, caller.getString(R.string.en_wrong_pass_match_msg), Toast.LENGTH_LONG).show();
             return;
         }
         UserController cont = new UserController(caller);
@@ -50,14 +41,14 @@ public class ViewController {
         cont.logInUser(email, password);
     }
 
-    public boolean checkIfLoggedInUser() {
+    public void startActivityIfUserLoggedIn(Class activity) {
         UserController cont = new UserController(caller);
-        return cont.checkIfLoggedInUser();
+        cont.startActivityIfUserLoggedIn(activity);
     }
 
     //Password security Checking
     private boolean isValidated(String psw){
-        if(     !psw.matches(".*[A-Z].*") ||
+        if (     !psw.matches(".*[A-Z].*") ||
                 !psw.matches(".*[a-z].*") ||
                 !psw.matches(".*\\d.*")   ||
                 psw.length() < 10) return false;
@@ -67,10 +58,4 @@ public class ViewController {
     private boolean isNotAValidPassword(String password) {
         return TextUtils.isEmpty(password) || !(isValidated(password));
     }
-
-    //Print messages
-    private void displayToast(Context caller, String msg){
-        Toast.makeText(caller, msg, Toast.LENGTH_LONG).show();
-    }
-
 }

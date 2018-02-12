@@ -53,12 +53,8 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
     public void onStart() {
         super.onStart();
-        //Check if user is already logged in and skip this step if so
         ViewController cont = new ViewController(getApplicationContext());
-        if (cont.checkIfLoggedInUser()) {
-            Intent myIntent = new Intent(this, MainActivity.class);
-            startActivity(myIntent);
-        }
+        cont.startActivityIfUserLoggedIn(MainActivity.class);
     }
 
     private void logInUser() {
@@ -73,7 +69,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(getApplicationContext(), "Please fill in the Password field", Toast.LENGTH_LONG).show();
             return;
         }
-        loadingD.setMessage("Loging In...");
+        loadingD.setMessage("Logging In...");
         loadingD.show();
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
