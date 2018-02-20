@@ -70,12 +70,12 @@ public class ViewController {
         LinearLayout layout = new LinearLayout(caller);
         layout.setOrientation(LinearLayout.VERTICAL);
         ConversationController cont = new ConversationController();
-        Message[] messages = cont.loadConversation();
+        Message[] messages = cont.loadConversation("Something", 0);
         for(int i=0; i<messages.length; ++i) {
             TextView msg = new TextView(caller);
             msg.setText(messages[i].getText());
             msg.setTextSize(18);
-            msg.setPadding(18, 18, 18, 18);
+            msg.setPadding(18, 9, 18, 9);
             TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1f);
             if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
                 params.setMargins(12, 0, 12, 12);
@@ -84,14 +84,14 @@ public class ViewController {
             }
             msg.setLayoutParams(params);
             if (messages[i].getSenderId().equals("123")) {
-                msg.setBackgroundResource(R.drawable.speech_bubble);
+                msg.setBackgroundResource(R.drawable.speech_bubble_green);
                 LinearLayout msgLayout = new LinearLayout(caller);
                 msgLayout.setOrientation(LinearLayout.VERTICAL);
                 msgLayout.setGravity(Gravity.RIGHT);
                 msgLayout.addView(msg);
                 layout.addView(msgLayout);
             } else {
-                msg.setBackgroundResource(R.drawable.orange_button);
+                msg.setBackgroundResource(R.drawable.speech_bubble_orange);
                 LinearLayout msgLayout = new LinearLayout(caller);
                 msgLayout.setOrientation(LinearLayout.VERTICAL);
                 msgLayout.setGravity(Gravity.LEFT);

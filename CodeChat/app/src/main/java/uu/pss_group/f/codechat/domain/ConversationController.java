@@ -3,7 +3,7 @@ package uu.pss_group.f.codechat.domain;
 
 public class ConversationController {
 
-    public Message[] loadConversation() {
+    public Message[] loadConversation(String conversationId, int lastMessage) {
         Message[] messages = new Message[5];
         messages[0] = new Message("123", "456", "Hi");
         messages[1] = new Message("456", "123", "Hi");

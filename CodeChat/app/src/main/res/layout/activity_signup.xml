@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundLight"
-    tools:context="uu.pss_group.f.codechat.SignUpActivity"
+    tools:context="uu.pss_group.f.codechat.view.SignUpActivity"
     tools:layout_editor_absoluteY="81dp">
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
