@@ -11,6 +11,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+
+import uu.pss_group.f.codechat.R;
 import uu.pss_group.f.codechat.data.MyAuthenticator;
 import uu.pss_group.f.codechat.data.MyDatabase;
 
@@ -32,7 +34,7 @@ public class UserManagement {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        Toast.makeText(caller, "User successfully signed up", Toast.LENGTH_LONG).show();
+                        Toast.makeText(caller, R.string.en_sign_up_ok_msg, Toast.LENGTH_LONG).show();
 
                         //Create the profile and store it in the database
                         String userId = task.getResult().getUser().getUid();

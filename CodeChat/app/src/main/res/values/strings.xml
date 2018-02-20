@@ -7,6 +7,8 @@
     <string name="en_fill_username_msg">Please fill in the Username field</string>
     <string name="en_wrong_pass_msg">Password should contain at least one uppercase character, a lowercase character, a digit and should be 10 characters long!</string>
     <string name="en_wrong_pass_match_msg">The passwords don\'t match</string>
+    <string name="en_sign_up_ok_msg">User successfully signed up</string>
+    <string name="en_unknown_error_msg">User successfully signed up</string>
     <!--All interface elements names (buttons, hints...)-->
 
 </resources>

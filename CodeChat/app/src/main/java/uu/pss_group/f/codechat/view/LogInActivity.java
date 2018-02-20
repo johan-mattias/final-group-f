@@ -21,7 +21,7 @@ import uu.pss_group.f.codechat.R;
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
     //Attributes
-    private Button loginButton, signupButton;
+    private Button loginButton, signUpButton;
     private EditText mailField, passwordField;
     private ProgressDialog loadingD;
     private FirebaseAuth firebaseAuth;
@@ -32,12 +32,12 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_log_in);
 
         loginButton = findViewById(R.id.login_loginButton);
-        signupButton = findViewById(R.id.login_signupButton);
+        signUpButton = findViewById(R.id.login_signupButton);
         mailField = findViewById(R.id.login_emailField);
         passwordField = findViewById(R.id.login_passwordField);
         loadingD = new ProgressDialog(this);
         loginButton.setOnClickListener(this);
-        signupButton.setOnClickListener(this);
+        signUpButton.setOnClickListener(this);
         firebaseAuth = FirebaseAuth.getInstance();
     }
 
@@ -45,7 +45,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         if (view == loginButton) {
             logInUser();
-        } else if (view == signupButton) {
+        } else if (view == signUpButton) {
             Intent myIntent = new Intent(this, SignUpActivity.class);
             startActivity(myIntent);
         }
