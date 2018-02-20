@@ -3,13 +3,14 @@ package uu.pss_group.f.codechat.domain;
 
 public class Message {
     //Attributes
-    private String senderId, receiverId, text;
+    private String senderId, receiverId, text, messageId;
 
     //Constructor
-    public Message(String senderId, String receiverId, String text) {
+    public Message(String senderId, String receiverId, String text, String messageId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.text = text;
+        this.messageId = messageId;
     }
 
     //Getters and Setters
@@ -19,10 +20,14 @@ public class Message {
 
     public String getText() {return text;}
 
-    public void setSenderId() {this.senderId = senderId;}
+    public String getId() {return messageId;}
 
-    public void setReceiverId() {this.receiverId = receiverId;}
+    public void setSenderId(String senderId) {this.senderId = senderId;}
 
-    public void setText() {this.text = text;}
+    public void setReceiverId(String receiverId) {this.receiverId = receiverId;}
+
+    public void setText(String text) {this.text = text;}
+
+    public void setId(String messageId) {this.messageId = messageId;}
 }
 

@@ -77,20 +77,26 @@ public class ViewController {
             msg.setTextSize(18);
             msg.setPadding(18, 9, 18, 9);
             TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1f);
-            if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
-                params.setMargins(12, 0, 12, 12);
-            } else {
-                params.setMargins(12, 15, 12, 9);
-            }
-            msg.setLayoutParams(params);
             if (messages[i].getSenderId().equals("123")) {
-                msg.setBackgroundResource(R.drawable.speech_bubble_green);
+                if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
+                    params.setMargins(144, 0, 36, 9);
+                } else {
+                    params.setMargins(144, 3, 36, 9);
+                }
+                msg.setLayoutParams(params);
+                msg.setBackgroundResource(R.drawable.speech_bubble_blue);
                 LinearLayout msgLayout = new LinearLayout(caller);
                 msgLayout.setOrientation(LinearLayout.VERTICAL);
                 msgLayout.setGravity(Gravity.RIGHT);
                 msgLayout.addView(msg);
                 layout.addView(msgLayout);
             } else {
+                if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
+                    params.setMargins(30, 0, 144, 9);
+                } else {
+                    params.setMargins(30, 3, 144, 9);
+                }
+                msg.setLayoutParams(params);
                 msg.setBackgroundResource(R.drawable.speech_bubble_orange);
                 LinearLayout msgLayout = new LinearLayout(caller);
                 msgLayout.setOrientation(LinearLayout.VERTICAL);
