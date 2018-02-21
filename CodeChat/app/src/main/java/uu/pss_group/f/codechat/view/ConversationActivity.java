@@ -22,8 +22,11 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
         scroll = findViewById(R.id.scroll);
-        ViewController cont = new ViewController(this);
-        scroll.addView(cont.loadConversation());
+
+        ViewController cont = new ViewController(this, scroll);
+        cont.loadConversation();
+
+
         scroll.post(new Runnable() {
             @Override
             public void run() {
@@ -42,5 +45,6 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
             ViewController cont = new ViewController(this);
             cont.sendMessage(messageField.getText().toString().trim());
         }
+
     }
 }

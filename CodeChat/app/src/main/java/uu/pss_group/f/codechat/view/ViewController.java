@@ -5,6 +5,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,9 +18,17 @@ public class ViewController {
     //Attributes
     private Context caller;
 
-    //Constructor
+    private ScrollView scroll;
+
+
     public ViewController(Context caller) {
         this.caller = caller;
+    }
+
+    //Constructor
+    public ViewController(Context caller, ScrollView scroll) {
+        this.caller = caller;
+        this.scroll = scroll;
     }
 
     //Register new user
@@ -65,18 +74,36 @@ public class ViewController {
         return TextUtils.isEmpty(password) || !(isValidated(password));
     }
 
-    //Conversation
-    protected LinearLayout loadConversation() {
+    public void refresh(Message[] messages){
         LinearLayout layout = new LinearLayout(caller);
+
         layout.setOrientation(LinearLayout.VERTICAL);
+// <<<<<<< HEAD
         ConversationController cont = new ConversationController();
-        Message[] messages = cont.loadConversation("Something", 0);
+        //Message[] messages= cont.loadConversation("Something", 0);
+// =======
+
+
+//>>>>>>> Started the implementation of the backend for Messages and Conversations.
+
         for(int i=0; i<messages.length; ++i) {
             TextView msg = new TextView(caller);
             msg.setText(messages[i].getText());
             msg.setTextSize(18);
             msg.setPadding(18, 9, 18, 9);
             TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1f);
+
+// <<<<<<< HEAD
+// =======
+/*
+            if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
+                params.setMargins(12, 0, 12, 12);
+            } else {
+                params.setMargins(12, 15, 12, 9);
+            }
+
+            msg.setLayoutParams(params);*/
+// >>>>>>> Started the implementation of the backend for Messages and Conversations.
             if (messages[i].getSenderId().equals("123")) {
                 if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
                     params.setMargins(144, 0, 36, 9);
@@ -105,7 +132,24 @@ public class ViewController {
                 layout.addView(msgLayout);
             }
         }
-        return layout;
+
+        scroll.removeAllViews();
+        scroll.addView(layout);
+    }
+
+    //Conversation
+    protected void loadConversation() {
+        LinearLayout layout = new LinearLayout(caller);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        ConversationController cont = new ConversationController(this);
+        cont.loadConversation();
+
+         //final Message[] messages = new Message[2];
+
+         //messages[0] = new Message("sender","rec","teeex");
+         // messages[1] = new Message("sender","rec","textttt");
+
+         //refresh(messages);
     }
 
     protected void sendMessage(String message) {

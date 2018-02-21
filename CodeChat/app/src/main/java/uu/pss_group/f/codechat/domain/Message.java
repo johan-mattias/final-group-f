@@ -5,6 +5,8 @@ public class Message {
     //Attributes
     private String senderId, receiverId, text, messageId;
 
+    public Message(){ }
+
     //Constructor
     public Message(String senderId, String receiverId, String text, String messageId) {
         this.senderId = senderId;
@@ -14,6 +16,12 @@ public class Message {
     }
 
     //Getters and Setters
+
+
+    public String getMessageId() {return messageId;}
+
+    public void setMessageId(String messageId) {this.messageId = messageId;}
+
     public String getSenderId() {return senderId;}
 
     public String getReceiverId() {return receiverId;}

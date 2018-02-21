@@ -1,12 +1,16 @@
 package uu.pss_group.f.codechat.domain;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Conversation {
     //Attributes
     private String conversationId, creatorId, receiverId;
     private int messageCount;
 
-    //Constructor
+    public Conversation(){}
+
     public Conversation(String creatorId, String receiverId) {
         this.conversationId = creatorId + "&&&" + receiverId;
         this.creatorId = creatorId;
@@ -15,11 +19,11 @@ public class Conversation {
     }
 
     //Getters and Setters
-    protected String getCreatorId() {return creatorId;}
+    public String getCreatorId() {return creatorId;}
 
     protected void setCreatorId(String creatorId) {this.creatorId = creatorId;}
 
-    protected String getReceiverId() {return receiverId;}
+    public String getReceiverId() {return receiverId;}
 
     protected void setReceiverId(String receiverId) {this.receiverId = receiverId;}
 
@@ -28,4 +32,13 @@ public class Conversation {
     protected void setMessageCount(int messageCount) {this.messageCount = messageCount;}
 
     protected String getConversationId() {return conversationId;}
+
+    public Map<String,Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("senderId", creatorId);
+        map.put("recieverId", receiverId);
+
+        return map;
+    }
 }

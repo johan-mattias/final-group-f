@@ -1,31 +1,69 @@
 package uu.pss_group.f.codechat.domain;
+import uu.pss_group.f.codechat.view.ViewController;
 
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.*;
 
 public class ConversationController {
+    private FirebaseAuth firebaseAuth;
+    private  ArrayList msg;
 
-    public Message[] loadConversation(String conversationId, int lastMessage) {
-        Message[] messages = new Message[20];
-        messages[0] = new Message("123", "456", "Hi", "1");
-        messages[1] = new Message("456", "123", "Hi", "2");
-        messages[2] = new Message("123", "456", "How are you?", "3");
-        messages[3] = new Message("123", "456", "..", "4");
-        messages[4] = new Message("456", "123", "Fine", "5");
-        messages[5] = new Message("123", "456", "Hi", "6");
-        messages[6] = new Message("456", "123", "Hi", "7");
-        messages[7] = new Message("123", "456", "How are you?", "8");
-        messages[8] = new Message("123", "456", "..", "9");
-        messages[9] = new Message("456", "123", "Fine", "10");
-        messages[10] = new Message("123", "456", "Hi", "11");
-        messages[11] = new Message("456", "123", "Hi", "12");
-        messages[12] = new Message("123", "456", "How are you?", "13");
-        messages[13] = new Message("123", "456", "..", "14");
-        messages[14] = new Message("456", "123", "Fine", "15");
-        messages[15] = new Message("123", "456", "Hi", "16");
-        messages[16] = new Message("456", "123", "Hi", "17");
-        messages[17] = new Message("123", "456", "How are you?", "18");
-        messages[18] = new Message("123", "456", "This is something long that takes more than one line. But its meaning is completely useless. Thanks for reading", "19");
-        messages[19] = new Message("456", "123", "This is the last message", "20");
+    private ViewController viewController;
 
-        return messages;
+    public ConversationController(){
     }
+
+    public ConversationController(ViewController viewController){
+        this.viewController = viewController;
+    }
+
+    public void loadConversation() {
+        //String conviD = conv.getCreatorId() + "&&&" + conv.getReceiverId();
+        msg = new ArrayList<Message>();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        String userId = firebaseAuth.getUid();
+
+        // get reference
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+
+        // To be done!
+        //String keyInMap = "messages/" + conviD + "/"+conv.getMessageCount();
+        String keyInMap = "messages/" + userId + "/fakes";
+
+        ref = database.getReference(keyInMap);
+
+        getMessagesBy(ref, userId);
+    }
+
+
+
+    private void getMessagesBy(DatabaseReference ref, final String userID){
+        ref.addValueEventListener(new ValueEventListener() {
+
+            List<Message> messages = new ArrayList<Message>();
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                 Message m = dataSnapshot.getValue(Message.class);
+                 messages.add(m);
+                 Message[] msgs = messages.toArray(new Message[0]);
+                 viewController.refresh(msgs);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+    });
+ }
 }
