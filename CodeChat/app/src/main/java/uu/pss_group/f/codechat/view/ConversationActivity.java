@@ -59,6 +59,7 @@ public class ConversationActivity extends AppCompatActivity implements View.OnCl
                 cont.sendMessage(this, conversationId, msg, senderId, receiverId);
             }
         }
+
     }
 
     protected void updateConversation(LinearLayout layout) {
