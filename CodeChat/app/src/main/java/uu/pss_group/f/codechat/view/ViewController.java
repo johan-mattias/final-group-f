@@ -107,4 +107,8 @@ public class ViewController {
         }
         return layout;
     }
+
+    protected void sendMessage(String message) {
+        Toast.makeText(caller, "Sent: " + message, Toast.LENGTH_LONG).show();
+    }
 }
