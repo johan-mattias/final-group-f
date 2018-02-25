@@ -1,11 +1,8 @@
 package uu.pss_group.f.codechat.database;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,9 +13,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import dalvik.annotation.TestTarget;
 import uu.pss_group.f.codechat.controllers.ConversationController;
-import uu.pss_group.f.codechat.domain.Conversation;
+import uu.pss_group.f.codechat.controllers.MessageController;
+import uu.pss_group.f.codechat.demo.Conversation;
+import uu.pss_group.f.codechat.demo.Message;
 
 public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher, ValueEventListener{
 
@@ -26,6 +27,7 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
     private Context ctx;
     private ConversationController controller;
     List<Conversation> conversations = new ArrayList<>();
+    private MessageController messageController;
 
     public void setContext(Context context){
         this.ctx = context;
@@ -39,7 +41,7 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
     @Override
     public void fetch(String convId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("conversations/"+convId);
+        DatabaseReference ref = database.getReference("conversations").child(convId);
         ref.addValueEventListener(this);
     }
 
@@ -51,43 +53,104 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
     @Override
     public void createConversation(String senderID, String recieverIdD) {
 
-        // get reference
+    }
+    
+    public void registerMessageRegister(MessageController mock) {
+        this.messageController = mock;
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+
+        Conversation conv = dataSnapshot.getValue(Conversation.class);
+
+        if(conv != null){
+            Log.d("yay", "Fetched conv id is: "+conv.getId());
+
+            conversations.add(conv);
+
+            controller.updateView(conversations);
+        }
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
+    }
+
+    public void createConversation(Conversation c, String tmpConvId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference ref = database.getReference();
+        String key = ref.child("conversations").getKey();
 
-        Conversation c = new Conversation(senderID, recieverIdD);
-        Map<String, Object>conversationData = c.toMap();
+        Map<String, Object> data = new HashMap<>();
 
-        Map<String, Object> theConversation = new HashMap<>();
-        theConversation.put("/test/conversations/"+senderID, conversationData );
+        String id = (String) c.get("id");
+        data.put(key+"/"+id+"/", c);
 
-        Map<String, Object> theConversationMirror = new HashMap<>();
-        theConversationMirror.put("/test/conversations/"+recieverIdD, conversationData );
-
-        ref.updateChildren(theConversation);
-        ref.updateChildren(theConversationMirror);
+        ref.updateChildren(data);
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(800);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
     }
 
-
     @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        Conversation conv = dataSnapshot.getValue(Conversation.class);
-        //Log.d("Fetched", "Fetched conv from: "+conv.getCreatorId());
-        conversations.add(conv);
+    public void fetchConversationsWith(String userId) {
 
-        controller.updateView(conversations);
     }
 
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
+    public void postMessage(String convId, String message, String author) {
+        final FirebaseDatabase database;
+        database = FirebaseDatabase.getInstance();
+
+        DatabaseReference ref = database.getReference();
+
+        String key = ref.getKey();
+
+        Map<String, Object> data = new HashMap<>();
+        String id = UUID.randomUUID().toString().substring(0, 10);
+
+
+        Message m = new Message();
+        m.put("author", author);
+        m.put("message", message);
+
+        // adds messsage to said conversation
+        data.put("conversations/"+convId+"/"+id, m);
+
+        // User joins the conversation
+        data.put("members/"+convId+"/"+author, true);
+
+        ref.updateChildren(data);
+
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void fetchMessages(String convId) {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("conversations").child(convId);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Message> m = dataSnapshot.getValue(List.class);
+                messageController.updateMessageView(m);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 }

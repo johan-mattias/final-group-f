@@ -1,37 +1,37 @@
 package uu.pss_group.f.codechat;
 
-import android.app.Activity;
-import android.app.Application;
-import android.app.Instrumentation;
-import android.content.Context;
-import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.InstrumentationTestCase;
-import android.test.mock.MockContext;
 
 import com.google.firebase.auth.FirebaseAuth;
+
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import uu.pss_group.f.codechat.controllers.MessageController;
 import uu.pss_group.f.codechat.database.FirebaseConversationFetcher;
-import uu.pss_group.f.codechat.domain.Conversation;
-import uu.pss_group.f.codechat.controllers.ConversationController;
-import uu.pss_group.f.codechat.view.ConversationViewer;
-import uu.pss_group.f.codechat.view.MainActivity;
 
-import static org.junit.Assert.*;
+import uu.pss_group.f.codechat.demo.Conversation;
+import uu.pss_group.f.codechat.demo.Message;
+import uu.pss_group.f.codechat.view.MainActivity;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.*;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -44,47 +44,226 @@ import java.util.List;
 public class ExampleInstrumentedTest extends InstrumentationTestCase{
 
     private static final String FIREBASE = "https://codechat-group-f.firebaseio.com/";
+    MainActivity activity;
 
     @Rule
     public ActivityTestRule<MainActivity> rule  = new  ActivityTestRule<>(MainActivity.class);
 
-    @Test
-    public void testCreateConversation() throws Exception {
-        MainActivity activity = rule.getActivity();
-        FirebaseApp.initializeApp(activity.getApplicationContext());
-        FirebaseAuth.getInstance().signInAnonymously();
-
-        FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
-
-        fetcher.createConversation("fakeSenderID","fakeRecieverId");
-
-    }
-
-
-    @Test
-    public void testRetrieveConversation(){
-
-//        System.setProperty("dexmaker.dexcache", InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
-
-        MainActivity activity = rule.getActivity();
-        FirebaseApp.initializeApp(activity.getApplicationContext());
-        FirebaseAuth.getInstance().signInAnonymously();
-
-        FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
-        fetcher.fetch("test/conversations/fakeSenderID");
-
-        ConversationControllerMock controllerMock = new ConversationControllerMock();
-        fetcher.register(controllerMock);
+    public void waitAbit(){
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        assertTrue(controllerMock.countConversations() == 1);
-        //assertTrue(true);
+    }
 
+    @Before
+    public void setup(){
+        activity = rule.getActivity();
+        FirebaseApp.initializeApp(activity.getApplicationContext());
+        FirebaseAuth.getInstance().signInAnonymously();
+    }
+
+    @Test
+    public void testRetrieveConversationWithMessages(){
+        // Setup
+        ConversationControllerMock mock = new ConversationControllerMock();
+        FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference ref = database.getReference();
+        fetcher.register(mock);
+
+        // Creates an hardcoded conversation and inserts it into the database.
+        HashMap<String, Object> data = new HashMap<>();
+        HashMap<String, Object> conversation = new HashMap<>();
+
+        ArrayList<Message> msg = new ArrayList<>();
+        msg.add(Message.create("aa","bb"));
+        msg.add(Message.create("aa","bb"));
+
+        conversation.put("id", "123");
+        conversation.put("messages", msg);
+        data.put("conversations/123", conversation);
+
+        // Inserts and wait
+        ref.updateChildren(data);
+        waitAbit();
+
+        // Fetch stored data and wait
+        fetcher.fetch("123");
+        waitAbit();
+
+        // Retrieve convesation from mock-controller.
+        List<Conversation> convs = mock.getConvs();
+        assertNotNull(convs);
+        assertEquals(1, convs.size());
+
+        Conversation conv = convs.get(0);
+        assertNotNull(conv);
+
+        // Asserts ID
+        assertEquals("123", conv.getId());
+
+        // Asserts Messages
+        ArrayList actual = conv.getMessages();
+        assertEquals(msg.toString(), actual.toString());
+    }
+
+    @Test
+    public void testCreateConversation(){
+        FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        Conversation c = Conversation.create();
+        c.setId("staticId");
+
+        fetcher.createConversation(c, "unusedParameter");
+        waitAbit();
+
+        DatabaseReference ref = database.getReference("conversations/staticId");
+        ref.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // Asserts that the object can be used as a 'Conversation' object.
+                Conversation c = dataSnapshot.getValue(Conversation.class);
+                assertNotNull(c);
+                assertEquals("staticId",c.getId());
+
+                // Asserts that the object can be used as a 'Map' object.
+                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                assertNotNull(map);
+                assertEquals("staticId", map.get("id"));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                fail("Request was cancelled...");
+            }
+
+        });
+
+    }
+
+    @Test
+    public void testCreateMessage(){
+        // When a message is posted in a conversation the following have to be verified.
+        // 1. The message is inserted in the right conversation.
+        // 2. The author is also registered as a member of said conversation
+
+        // By filtering on "members" we are allowed to get all conversations for a given member
+        // "SELECT conversations from CONV where authorId = currentUser.
+        // [conversation | conversation -> CONV || c.authorId = currentId]
+
+
+        // Also all messages could be stored as "convId : messages[msg1, msg2, msg3].
+        /*
+
+        members{
+            convId: [authorId: true]
+        }
+
+        */
+
+        FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        String convId = "fakeConvv";
+
+        fetcher.postMessage(convId, "TheMessage","TheAuthor");
+        waitAbit();
+
+        // Asserts that the message is created.
+
+        DatabaseReference ref = database.getReference("conversations/fakeConvv/");
+        ref.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Asserts that all messages inside the conversation contains the correct message and author.
+                // Even though they are the same for all messages.
+                for(DataSnapshot snap : dataSnapshot.getChildren()){
+
+                    // Asserts that the object can be used in a 'non-map' format.
+                    Message m = snap.getValue(Message.class);
+                    assertNotNull(m);
+                    assertEquals("TheMessage", m.getMessage());
+                    assertEquals("TheAuthor", m.getAuthor());
+
+                    // Assert that the object works in a 'map' format.
+                    Map<String, Object> map = (Map<String, Object>) snap.getValue();
+                    assertNotNull(map);
+                    assertEquals("TheMessage", map.get("message"));
+                    assertEquals("TheAuthor", map.get("author"));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                fail("Request was cancelled...");
+            }
+
+        });
+
+        // Asserts that the author is registered as a member in the 'members' group.
+        ref = database.getReference("members/fakeConvv/");
+        ref.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Asserts that all messages inside the conversation contains the correct message and author.
+                // Even though they are the same for all messages.
+                Map<String, Boolean> map = (Map<String, Boolean>) dataSnapshot.getValue();
+                assertTrue(String.valueOf(true), map.get("TheAuthor"));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                fail("Request was cancelled...");
+            }
+
+        });
+
+    }
+
+    @Test
+    public void testRetrieveMessages(){
+// Setup
+        MessageControllerMock mock = new MessageControllerMock();
+
+        FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference ref = database.getReference();
+        fetcher.registerMessageRegister(mock);
+
+        // Creates an hardcoded conversation and inserts it into the database.
+        HashMap<String, Object> data = new HashMap<>();
+        HashMap<String, Object> conversation = new HashMap<>();
+
+        ArrayList<Message> msg = new ArrayList<>();
+        msg.add(Message.create("message1","author"));
+        msg.add(Message.create("message2","author"));
+
+        conversation.put("id", "newmessages");
+        conversation.put("messages", msg);
+        data.put("conversations/newmessages", conversation);
+
+        // Inserts and wait
+        ref.updateChildren(data);
+        waitAbit();
+
+        // Fetch stored messages in a conversation and wait
+        fetcher.fetchMessages("123");
+
+        waitAbit();
+
+        // Retrieve convesation from mock-controller.
+        List<Message> messages = mock.getMsgs();
 
     }
 
