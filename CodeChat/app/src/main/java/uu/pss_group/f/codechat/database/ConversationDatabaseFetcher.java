@@ -1,9 +1,7 @@
 package uu.pss_group.f.codechat.database;
 
-import java.util.List;
-
 import uu.pss_group.f.codechat.controllers.ConversationController;
-import uu.pss_group.f.codechat.domain.Conversation;
+import uu.pss_group.f.codechat.demo.Conversation;
 
 public interface ConversationDatabaseFetcher {
 
@@ -14,4 +12,8 @@ public interface ConversationDatabaseFetcher {
     void register(ConversationController c);
 
     void createConversation(String senderID, String recieverIdD);
+
+    void createConversation(Conversation c, String tmpConvId);
+
+    void fetchConversationsWith(String userId);
 }
