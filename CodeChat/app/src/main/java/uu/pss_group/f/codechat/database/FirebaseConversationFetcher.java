@@ -138,12 +138,24 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
 
     public void fetchMessages(String convId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("conversations").child(convId);
+        DatabaseReference ref = database.getReference("conversations").child(convId).child("messages");
         ref.addValueEventListener(new ValueEventListener() {
+            ArrayList<Message> clazz = new ArrayList<Message>();
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Message> m = dataSnapshot.getValue(List.class);
-                messageController.updateMessageView(m);
+                for (DataSnapshot msgSnapshot: dataSnapshot.getChildren()) {
+                    Message m = msgSnapshot.getValue(Message.class);
+
+                    if(m != null){
+
+                        Log.d("testsuite","Fetched: "+m.getAuthor()+"   \t  message: "+m.getMessage());
+
+                        clazz.add(m);
+                        messageController.updateView(clazz);
+                    }
+                }
+
             }
 
             @Override
