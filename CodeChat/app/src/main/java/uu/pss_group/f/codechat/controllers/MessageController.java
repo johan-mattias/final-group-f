@@ -15,7 +15,7 @@ import uu.pss_group.f.codechat.view.MessageViewer;
 
 public class MessageController {
     private MessageViewer view;
-    private MessageDatabaseFetcher fetcher;
+    private ConversationDatabaseFetcher fetcher;
 
     public void setView(MessageViewer view) {
         this.view = view;
@@ -23,22 +23,22 @@ public class MessageController {
         view.register(this);
     }
 
-    public void setDatabase(MessageDatabaseFetcher fetcher) {
+    public void setFetcher(ConversationDatabaseFetcher fetcher) {
         this.fetcher = fetcher;
         fetcher.setup();
-        fetcher.register(this);
+        fetcher.registerMessageController(this);
     }
 
     public void fetchData(Conversation conv){
-        fetcher.fetch(conv);
+        fetcher.fetch(conv.getId());
     }
 
     public void updateView(List conversations) {
         this.view.update(conversations);
     }
 
-    public void createMessage(String senderID, String recieverID) {
-        this.fetcher.createMessage(senderID, recieverID);
+    public void createMessage(Conversation conv, String senderID, String msg) {
+        this.fetcher.postMessage(conv.getId(), senderID, msg);
     }
 
 }

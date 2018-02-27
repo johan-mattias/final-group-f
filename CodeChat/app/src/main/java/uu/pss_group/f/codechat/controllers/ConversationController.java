@@ -22,7 +22,7 @@ public class ConversationController {
     public void setDatabase(ConversationDatabaseFetcher fetcher) {
         this.fetcher = fetcher;
         fetcher.setup();
-        fetcher.register(this);
+        fetcher.registerConversationController(this);
     }
 
     public void fetchData(String convId){

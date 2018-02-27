@@ -21,6 +21,10 @@ public class Message extends HashMap<String, String> {
 
     public static Message create(String message, String author){
         Message m = new Message();
+
+        m.setMessage(message);
+        m.setAuthor(author);
+
         m.put("author", author);
         m.put("message", message);
 

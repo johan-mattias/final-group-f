@@ -73,8 +73,9 @@ public class ExampleInstrumentedTest extends InstrumentationTestCase{
         FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
+        fetcher.registerConversationController(mock);
+
         DatabaseReference ref = database.getReference();
-        fetcher.register(mock);
 
         // Creates an hardcoded conversation and inserts it into the database.
         HashMap<String, Object> data = new HashMap<>();
@@ -225,7 +226,7 @@ public class ExampleInstrumentedTest extends InstrumentationTestCase{
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         DatabaseReference ref = database.getReference();
-        fetcher.registerMessageRegister(mock);
+        fetcher.registerMessageController(mock);
 
         // Creates an hardcoded conversation and inserts it into the database.
         HashMap<String, Object> data = new HashMap<>();

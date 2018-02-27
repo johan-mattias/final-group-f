@@ -1,7 +1,10 @@
 package uu.pss_group.f.codechat.demo;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -16,6 +19,9 @@ public class Conversation extends HashMap<String, Object> {
     public Conversation(String id, ArrayList messages){
         this.id = id;
         this.messages = messages;
+
+        put("id", id);
+        put("messages",messages);
     }
 
     public static Conversation create(){
@@ -29,6 +35,9 @@ public class Conversation extends HashMap<String, Object> {
         messages.add(Message.create("A new fresh conversation!","Doggo dog"));
         c.put("messages",messages);
 
+        c.setId(id);
+        c.setMessages(messages);
+
         return c;
     }
 
@@ -36,7 +45,22 @@ public class Conversation extends HashMap<String, Object> {
         Message m = new Message();
         String id = UUID.randomUUID().toString();
 
+        ArrayList<Message> messages = lazyInitMessages();
+
+        messages.add(m);
+
         m.put(id, text);
+        put("messsages", messages);
+        this.messages = messages;
+    }
+
+    @NonNull
+    private ArrayList<Message> lazyInitMessages() {
+        ArrayList<Message> messages = (ArrayList<Message>) get("messages");
+        if(messages == null){
+            messages = new ArrayList<Message>();
+        }
+        return messages;
     }
 
     public String getId() {
