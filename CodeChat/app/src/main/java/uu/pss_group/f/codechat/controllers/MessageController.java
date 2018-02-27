@@ -41,7 +41,4 @@ public class MessageController {
         this.fetcher.createMessage(senderID, recieverID);
     }
 
-    public void updateMessageView(List<Message> m) {
-        this.view.update(m);
-    }
 }

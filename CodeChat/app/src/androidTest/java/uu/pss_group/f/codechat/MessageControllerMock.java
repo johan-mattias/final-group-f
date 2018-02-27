@@ -28,6 +28,9 @@ public class MessageControllerMock extends MessageController {
     public void updateView(List messages) {
         this.counter = messages.size();
         this.msgs = messages;
+        Message m = (Message) messages.get(0);
+        Log.d("yay","author of first message: "+m.getAuthor());
+        Log.d("yay","Messages in MessageController: "+counter);
     }
 
 }

@@ -155,20 +155,6 @@ public class ExampleInstrumentedTest extends InstrumentationTestCase{
         // 1. The message is inserted in the right conversation.
         // 2. The author is also registered as a member of said conversation
 
-        // By filtering on "members" we are allowed to get all conversations for a given member
-        // "SELECT conversations from CONV where authorId = currentUser.
-        // [conversation | conversation -> CONV || c.authorId = currentId]
-
-
-        // Also all messages could be stored as "convId : messages[msg1, msg2, msg3].
-        /*
-
-        members{
-            convId: [authorId: true]
-        }
-
-        */
-
         FirebaseConversationFetcher fetcher = new FirebaseConversationFetcher();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -246,8 +232,8 @@ public class ExampleInstrumentedTest extends InstrumentationTestCase{
         HashMap<String, Object> conversation = new HashMap<>();
 
         ArrayList<Message> msg = new ArrayList<>();
-        msg.add(Message.create("message1","author"));
-        msg.add(Message.create("message2","author"));
+        msg.add(Message.create("message1","author1"));
+        msg.add(Message.create("message2","author2"));
 
         conversation.put("id", "newmessages");
         conversation.put("messages", msg);
@@ -258,13 +244,27 @@ public class ExampleInstrumentedTest extends InstrumentationTestCase{
         waitAbit();
 
         // Fetch stored messages in a conversation and wait
-        fetcher.fetchMessages("123");
+        fetcher.fetchMessages("newmessages");
 
         waitAbit();
 
         // Retrieve convesation from mock-controller.
-        List<Message> messages = mock.getMsgs();
+        assertMessageIsCorrect(mock.getMsgs());
+    }
 
+    private void assertMessageIsCorrect(List<Message> messages) {
+        assertEquals(2, messages.size());
+
+        String message1 = messages.get(0).getMessage();
+        String message2 = messages.get(1).getMessage();
+
+        String author1 = messages.get(0).getAuthor();
+        String author2 = messages.get(1).getAuthor();
+
+        assertEquals("message1", message1);
+        assertEquals("message2", message2);
+        assertEquals("author1", author1 );
+        assertEquals("author2", author2 );
     }
 
 }
