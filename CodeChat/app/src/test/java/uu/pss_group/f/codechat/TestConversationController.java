@@ -32,10 +32,11 @@ public class TestConversationController {
         verify(mockFetcher).setup();
     }
 
+
     @Test
     public void testComponentsAreRegistered(){
         verify(mockView).register(c);
-        verify(mockFetcher).register(c);
+        verify(mockFetcher).registerConversationController(c);
     }
 
     @Test

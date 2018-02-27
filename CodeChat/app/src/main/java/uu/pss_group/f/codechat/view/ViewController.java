@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import uu.pss_group.f.codechat.R;
 import uu.pss_group.f.codechat.domain.ConversationController;
 import uu.pss_group.f.codechat.domain.Message;
-import uu.pss_group.f.codechat.domain.MessagesManagement;
 import uu.pss_group.f.codechat.domain.UserController;
 
 public class ViewController {
@@ -96,7 +95,6 @@ public class ViewController {
         return TextUtils.isEmpty(password) || !(isValidated(password));
     }
 
-<<<<<<< HEAD
     //Conversation
     protected void loadConversation(ConversationActivity activity, String conversationId) {
         ConversationController cont = new ConversationController(caller);
@@ -104,49 +102,19 @@ public class ViewController {
     }
 
     protected void refreshConversation(ConversationActivity activity, ArrayList<Message> messages) {
-=======
-    public void refresh(Message[] messages){
->>>>>>> Started the implementation of the backend for Messages and Conversations.
         LinearLayout layout = new LinearLayout(caller);
 
         layout.setOrientation(LinearLayout.VERTICAL);
-<<<<<<< HEAD
         for(int i=0; i<messages.size(); ++i) {
-=======
-// <<<<<<< HEAD
-        ConversationController cont = new ConversationController();
-        //Message[] messages= cont.loadConversation("Something", 0);
-// =======
 
-
-//>>>>>>> Started the implementation of the backend for Messages and Conversations.
-
-        for(int i=0; i<messages.length; ++i) {
->>>>>>> Started the implementation of the backend for Messages and Conversations.
             TextView msg = new TextView(caller);
             msg.setText(messages.get(i).getText());
             msg.setTextSize(18);
             msg.setPadding(18, 9, 18, 9);
             TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1f);
-<<<<<<< HEAD
             if (messages.get(i).getSenderId().equals(getActiveUserId())) {
                 if (i > 0 && messages.get(i-1).getSenderId().equals(messages.get(i).getSenderId())) {
-=======
 
-// <<<<<<< HEAD
-// =======
-/*
-            if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
-                params.setMargins(12, 0, 12, 12);
-            } else {
-                params.setMargins(12, 15, 12, 9);
-            }
-
-            msg.setLayoutParams(params);*/
-// >>>>>>> Started the implementation of the backend for Messages and Conversations.
-            if (messages[i].getSenderId().equals("123")) {
-                if (i > 0 && messages[i-1].getSenderId().equals(messages[i].getSenderId())) {
->>>>>>> Started the implementation of the backend for Messages and Conversations.
                     params.setMargins(144, 0, 36, 9);
                 } else {
                     params.setMargins(144, 3, 36, 9);

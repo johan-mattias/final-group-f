@@ -15,9 +15,6 @@ public class Message {
         this.messageId = messageId;
         this.conversationId = conversationId;
     }
-
-    public Message() {}
-
     //Getters and Setters
 
 
@@ -31,8 +28,6 @@ public class Message {
 
     public String getText() {return text;}
 
-    public String getMessageId() {return messageId;}
-
     public String getConversationId() {return conversationId;}
 
     public void setSenderId(String senderId) {this.senderId = senderId;}
@@ -40,8 +35,6 @@ public class Message {
     public void setReceiverId(String receiverId) {this.receiverId = receiverId;}
 
     public void setText(String text) {this.text = text;}
-
-    public void setMessageId(String messageId) {this.messageId = messageId;}
 
     public void setConversationId(String conversationId) {this.conversationId = conversationId;}
 }

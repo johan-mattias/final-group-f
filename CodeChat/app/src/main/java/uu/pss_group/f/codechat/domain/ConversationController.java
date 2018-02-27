@@ -89,7 +89,7 @@ public class ConversationController {
                  Message m = dataSnapshot.getValue(Message.class);
                  messages.add(m);
                  Message[] msgs = messages.toArray(new Message[0]);
-                 viewController.refresh(msgs);
+             //    viewController.refresh(msgs);
             }
 
             @Override

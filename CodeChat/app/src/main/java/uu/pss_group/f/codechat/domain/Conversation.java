@@ -18,8 +18,6 @@ public class Conversation {
         this.messageCount = 1;
     }
 
-    public Conversation() {}
-
     //Getters and Setters
     public String getCreatorId() {return creatorId;}
 

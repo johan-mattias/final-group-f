@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import dalvik.annotation.TestTarget;
 import uu.pss_group.f.codechat.controllers.ConversationController;
 import uu.pss_group.f.codechat.controllers.MessageController;
 import uu.pss_group.f.codechat.demo.Conversation;
@@ -46,17 +45,17 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
     }
 
     @Override
-    public void register(ConversationController c) {
-        this.controller = c;
-    }
-
-    @Override
     public void createConversation(String senderID, String recieverIdD) {
 
     }
-    
-    public void registerMessageRegister(MessageController mock) {
+
+    public void registerMessageController(MessageController mock) {
         this.messageController = mock;
+    }
+
+    @Override
+    public void registerConversationController(ConversationController conversationController) {
+        this.controller = conversationController;
     }
 
     @Override
@@ -78,6 +77,7 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
 
     }
 
+    @Override
     public void createConversation(Conversation c, String tmpConvId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -104,6 +104,7 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
 
     }
 
+    @Override
     public void postMessage(String convId, String message, String author) {
         final FirebaseDatabase database;
         database = FirebaseDatabase.getInstance();
@@ -136,6 +137,7 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
 
     }
 
+    @Override
     public void fetchMessages(String convId) {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("conversations").child(convId).child("messages");
@@ -165,4 +167,5 @@ public class FirebaseConversationFetcher implements  ConversationDatabaseFetcher
         });
 
     }
+
 }
