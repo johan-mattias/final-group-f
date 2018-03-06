@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import uu.pss_group.f.codechat.R;
@@ -42,14 +43,14 @@ public class UserManagement {
                         database.getDatabaseController().child("profiles").child(userId).setValue(profile).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(caller, "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
+                                Toast.makeText(caller, caller.getString(R.string.en_error_msg), Toast.LENGTH_LONG).show();
                             }
                         });
                     } else {
                         if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                            Toast.makeText(caller, "This user is already registered", Toast.LENGTH_LONG).show();
+                            Toast.makeText(caller, caller.getString(R.string.en_error_msg), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(caller, "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
+                            Toast.makeText(caller, caller.getString(R.string.en_error_msg), Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -63,7 +64,11 @@ public class UserManagement {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (!task.isSuccessful()) {
-                        Toast.makeText(caller, "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
+                        if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                            Toast.makeText(caller, caller.getString(R.string.en_credentials_error_msg), Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(caller, caller.getString(R.string.en_error_msg), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });
@@ -77,10 +82,21 @@ public class UserManagement {
                     Intent intent = new Intent(caller, activity);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     caller.startActivity(intent);
-
                 }
             }
         });
+    }
+
+    protected void logOutUser(Context caller, Class activity) {
+        auth.getAuthController().signOut();
+        Intent intent = new Intent(caller, activity);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        caller.startActivity(intent);
+
+    }
+
+    protected String activeUserId() {
+        return auth.getAuthController().getCurrentUser().getUid();
     }
 
 }

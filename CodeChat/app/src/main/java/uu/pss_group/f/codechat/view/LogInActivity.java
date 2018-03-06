@@ -24,7 +24,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     private Button loginButton, signUpButton;
     private EditText mailField, passwordField;
     private ProgressDialog loadingD;
-    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         loadingD = new ProgressDialog(this);
         loginButton.setOnClickListener(this);
         signUpButton.setOnClickListener(this);
-        firebaseAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -60,29 +58,11 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     private void logInUser() {
         String email = mailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getApplicationContext(), "Please fill in the Email field", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (TextUtils.isEmpty(password) || password == null) {
-            Toast.makeText(getApplicationContext(), "Please fill in the Password field", Toast.LENGTH_LONG).show();
-            return;
-        }
         loadingD.setMessage("Logging In...");
         loadingD.show();
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(myIntent);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Something went wrong... Please try again", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+        ViewController cont = new ViewController(getApplicationContext());
+        cont.logInUser(email, password);
         loadingD.cancel();
+        cont.startActivityIfUserLoggedIn(MainActivity.class);
     }
 }

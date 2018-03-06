@@ -11,8 +11,10 @@ public class Conversation {
         this.conversationId = creatorId + "&&&" + receiverId;
         this.creatorId = creatorId;
         this.receiverId = receiverId;
-        this.messageCount = 0;
+        this.messageCount = 1;
     }
+
+    public Conversation() {}
 
     //Getters and Setters
     protected String getCreatorId() {return creatorId;}

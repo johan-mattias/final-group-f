@@ -37,9 +37,18 @@ public class UserController {
         userManager.logInUser(caller, email, password);
     }
 
+    public void logOutUser(Class activity) {
+        UserManagement userManager = new UserManagement(getAuthReference(), getDatabaseReference());
+        userManager.logOutUser(caller, activity);
+    }
+
     public void startActivityIfUserLoggedIn(Class activity) {
         UserManagement userManager = new UserManagement(getAuthReference(), getDatabaseReference());
         userManager.startActivityIfUserLoggedIn(caller, activity);
     }
 
+    public String getActiveUserId() {
+        UserManagement userManager = new UserManagement(getAuthReference(), getDatabaseReference());
+        return userManager.activeUserId();
+    }
 }
